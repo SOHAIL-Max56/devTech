@@ -320,3 +320,15 @@ server.listen(5000);
 - RESTful API
     - The backend should expose a RESTful API for the frontend to interact with.
 
+## 
+
+  - Advance Routing Techniques in ExpressJS
+    - + : To define multiple route parameters in a single route.
+    - * : To define a wildcard route that can match any path.
+    - Sending JSON response from ExpressJS server
+        ```javascript
+        app.use("/ab*c", (req, res) => {
+          res.send({ FirstName: "John", LastName: "Doe" });
+        });
+        ```
+        

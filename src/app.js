@@ -2,12 +2,9 @@ const express = require("express");
 
 const app = express();
 
-app.use("/", (req, res) => {
-  res.send("Hello from new server!");
-});
-
-app.use("/test", (req, res) => {
-  res.send("Hello from second middleware!");
+app.use("/test/:userId/:name/:password", (req, res) => {
+  console.log(req.params);
+  res.send({ FirstName: "John", LastName: "Doe" });
 });
 
 app.listen(3000, () => {
