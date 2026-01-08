@@ -331,4 +331,19 @@ server.listen(5000);
           res.send({ FirstName: "John", LastName: "Doe" });
         });
         ```
-        
+    - Connecting MongoDB Database with NodeJS using Mongoose
+        ```javascript
+        const moongoose = require("mongoose");
+
+        const connectdb = async () => {
+          await moongoose.connect(
+            "mongodb+srv://devtech:JCovl3IX1TandceF@myproject.tyvfvsz.mongodb.net/FirstDatabase"
+          );
+        };
+        module.exports = connectdb;
+        ```
+    - MongoDB Compass
+        - Databse GUI tool to visualize and manage MongoDB databases.
+        - Collections: Equivalent to tables in relational databases.
+        - Documents: Equivalent to rows in relational databases.
+        - Fields: Equivalent to columns in relational databases.
