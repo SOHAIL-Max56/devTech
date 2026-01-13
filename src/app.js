@@ -43,6 +43,39 @@ app.get("/feed", async (req, res) => {
     console.error("Error fetching all user data:", error);
   }
 });
+// Deleting user by id
+app.delete("/deleteUser", async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    await User.findByIdAndDelete({ _id: userId });
+    res.status(200).send("User deleted successfully");
+    console.log("User get deleted: ", userId);
+  } catch (error) {
+    console.error("Error deleting user:", error);
+  }
+});
+// Update user by id
+app.patch("/updateUser", async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    await User.findByIdAndUpdate(userId, req.body);
+    res.status(200).send("User updated successfully");
+  } catch (error) {
+    console.error("Error updating user:", error);
+  }
+});
+
+// find the user and Update
+app.patch("/findAndUpdate", async (req, res) => {
+  const { userEmail, ...updateData } = req.body;
+  try {
+  await User.findOneAndUpdate({ email: userEmail}, updateData, { new: true });
+    console.log(req.body);
+    res.status(200).send("User found and updated successfully");
+  } catch (error) {
+    console.error("Error finding and updating user:", error);
+  }
+});
 // Connect to the database and start the servver
 connectdb()
   .then(() => {
