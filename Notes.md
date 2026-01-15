@@ -347,3 +347,19 @@ server.listen(5000);
         - Collections: Equivalent to tables in relational databases.
         - Documents: Equivalent to rows in relational databases.
         - Fields: Equivalent to columns in relational databases.
+
+ # 
+
+ - Different HTTP Methods
+    1. GET : To retrieve data from the server.
+    2. POST : To send data to the server to create a new resource.
+    3. PUT : To update an existing resource on the server.
+    4. DELETE : To delete a resource from the server.
+    5. PATCH : To partially update an existing resource on the server.
+
+    | Description | PUT | PATCH |
+    |-------------|-----|-------|
+    | Definition  | The PUT method is used to update an existing resource or create a new resource if it does not exist. It replaces the entire resource with the new data provided in the request. | The PATCH method is used to partially update an existing resource. It only modifies the specified fields in the resource, leaving the other fields unchanged. |
+    | Idempotent  | Yes | Yes |
+    | Request Body | The request body of a PUT request typically contains the complete representation of the resource being updated or created. | The request body of a PATCH request contains only the fields that need to be updated, along with their new values. |
+    | Use Case    | Use PUT when you want to replace the entire resource or create a new resource if it does not exist. | Use PATCH when you want to update only specific fields of an existing resource without affecting the other fields. |
