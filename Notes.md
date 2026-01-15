@@ -408,3 +408,20 @@ server.listen(5000);
     5. **Custom Validation**: Implement any custom validation logic that is specific to your application's requirements.
  - Here is an example of how to implement API validation for update operations in an Express.js route:
 ```javascript
+app.patch("/findAndUpdate", async (req, res) => {
+  const { userEmail, ...updateData } = req.body;
+  try {
+    // Doing API validation for all the fields before updating
+    const updatedUser = ["password", "About", "skills", "age"];
+    const validateUpdate = Object.keys(updateData).every((key) => updatedUser.includes(key));
+    if (!validateUpdate) {
+      return res.status(400).send("Invalid update fields");
+    }
+    await User.findOneAndUpdate({ email: userEmail}, updateData, { new: true });
+    console.log(req.body);
+    res.status(200).send("User found and updated successfully");
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+```
