@@ -363,3 +363,48 @@ server.listen(5000);
     | Idempotent  | Yes | Yes |
     | Request Body | The request body of a PUT request typically contains the complete representation of the resource being updated or created. | The request body of a PATCH request contains only the fields that need to be updated, along with their new values. |
     | Use Case    | Use PUT when you want to replace the entire resource or create a new resource if it does not exist. | Use PATCH when you want to update only specific fields of an existing resource without affecting the other fields. |
+
+# Episode (Building DevTech Blog Application - Part 2)
+
+1. **Mongoose Schema and Model**
+ - In Mongoose, a schema is a blueprint or structure that defines the shape of the documents within a MongoDB collection. It specifies the fields, their data types, validation rules, default values, and other constraints for the documents. A schema acts as a template for creating and validating documents in the database.
+ - A model, on the other hand, is a compiled version of the schema that provides an interface for interacting with the MongoDB collection. It is created using the `mongoose.model()` method, which takes the name of the model and the schema as arguments. The model allows you to perform various operations on the collection, such as creating, reading, updating, and deleting documents.
+ - In summary, a schema defines the structure and rules for the documents in a collection, while a model provides an interface for interacting with that collection based on the defined schema.
+2. **Updating Documents in MongoDB using Mongoose**
+ - There are several methods to update documents in MongoDB using Mongoose. Some of the commonly used [Read more at moongoose Doc] (https://mongoosejs.com/docs/api/model.html)
+
+ 3. **Schema Validation in Mongoose**
+    - Mongoose provides built-in schema validation to ensure that the data being saved to the database adheres to the defined schema rules. You can specify validation rules for each field in the schema, such as required fields, data types, minimum and maximum values, string length, and custom validation functions. For example:
+    ```javascript
+    const userSchema = new mongoose.Schema({
+      email: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true,
+      },
+      password: {
+        type: String,
+        required: true,
+        minlength: 6,
+      },
+      age: {
+        type: Number,
+        min: 18,
+      },
+    });
+    ```
+    - In this example, the `email` field is required, must be unique, and will be converted to lowercase and trimmed of whitespace. The `password` field is also required and must have a minimum length of 6 characters. The `age` field must be a number with a minimum value of 18.
+    - When you attempt to save a document that violates any of the validation rules, Mongoose will throw a validation error, preventing the document from being saved to the database. You can handle these errors in your application code to provide feedback to users or take appropriate actions.
+    - Read more about schema validation in the [Mongoose Documentation](https://mongoosejs.com/docs/schematypes.html).
+3. **API Validation for Update Operations**
+ - When performing update operations in a RESTful API, it is important to validate the incoming data to ensure that it meets the required criteria before updating the database. This helps to maintain data integrity and prevent invalid or malicious data from being stored.
+ - Here are some common practices for API validation during update operations:
+    1. **Field Validation**: Check that the fields being updated are valid and allowed to be modified. This can be done by comparing the incoming data against a list of allowed fields.
+    2. **Data Type Validation**: Ensure that the data types of the fields being updated match the expected types defined in the schema. For example, if a field is expected to be a string, validate that the incoming data is indeed a string.
+    3. **Value Validation**: Validate that the values being updated meet specific criteria, such as length, range, or format. For example, if updating an email field, validate that the new value is a valid email address.
+    4. **Required Fields**: If certain fields are required for an update operation, ensure that they are present in the incoming data.
+    5. **Custom Validation**: Implement any custom validation logic that is specific to your application's requirements.
+ - Here is an example of how to implement API validation for update operations in an Express.js route:
+```javascript

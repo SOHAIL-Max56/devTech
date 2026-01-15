@@ -55,9 +55,15 @@ app.delete("/deleteUser", async (req, res) => {
   }
 });
 // Update user by id
-app.patch("/updateUser", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/updateUser/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   try {
+    const updatedUser = ["password", "About", "skills", "age"];
+    const validateUpdate = Object.keys(req.body).every((key) => updatedUser.includes(key));
+    if (!validateUpdate) {
+      return res.status(400).send("Invalid update fields");
+    }
+    console.log("User get Updated: ", userId)
     await User.findByIdAndUpdate(userId, req.body);
     res.status(200).send("User updated successfully");
   } catch (error) {
@@ -69,6 +75,12 @@ app.patch("/updateUser", async (req, res) => {
 app.patch("/findAndUpdate", async (req, res) => {
   const { userEmail, ...updateData } = req.body;
   try {
+    // Doing API validation for all the fields before updating
+    const updatedUser = ["password", "About", "skills", "age"];
+    const validateUpdate = Object.keys(updateData).every((key) => updatedUser.includes(key));
+    if (!validateUpdate) {
+      return res.status(400).send("Invalid update fields");
+    }
   await User.findOneAndUpdate({ email: userEmail}, updateData, { new: true });
     console.log(req.body);
     res.status(200).send("User found and updated successfully");
