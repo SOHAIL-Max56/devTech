@@ -425,3 +425,4 @@ app.patch("/findAndUpdate", async (req, res) => {
   }
 });
 ```
+- Use npm package 'validator' for advanced validation like email format, strong password, etc.
