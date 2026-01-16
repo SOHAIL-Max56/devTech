@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       lowercase: true,
       unique: true,
-      maxlength: 25,
+      maxlength: 40,
       minlength: 10,
       validate(value) {
         if (!validator.isEmail(value)) {
@@ -34,17 +34,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
       minlength: 8,
       validate(value) {
         if (!validator.isStrongPassword(value)) {
           throw new Error("Password is not strong");
         }
-      }
+      },
     },
     gender: {
       type: String,
-      required: true,
       validate(value) {
         if (!["male", "female", "other"].includes(value)) {
           throw new Error("Gender data is not valid");

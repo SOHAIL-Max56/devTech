@@ -426,3 +426,63 @@ app.patch("/findAndUpdate", async (req, res) => {
 });
 ```
 - Use npm package 'validator' for advanced validation like email format, strong password, etc.
+- Never ever trust request body data directly without validation.
+
+4. **Flow of Signup and Login API**
+ - **Signup Flow**
+    1. The client sends a POST request to the `/signup` endpoint with user details (e.g., email, password).
+    2. The server receives the request and validates the input data.
+    3. If the data is valid, the server hashes the password using a secure hashing algorithm (e.g., bcrypt).
+    4. The server creates a new user document in the database with the hashed password and other user details.
+    5. The server sends a response back to the client indicating that the signup was successful.
+ - **Login Flow**
+    1. The client sends a POST request to the `/login` endpoint with user credentials (e.g., email, password).
+    2. The server receives the request and validates the input data.
+    3. The server retrieves the user document from the database based on the provided email.
+    4. The server compares the provided password with the stored hashed password using a secure comparison method.
+    5. If the passwords match, the server generates an authentication token (e.g., JWT) for the user.
+    6. The server sends a response back to the client with the authentication token and user details.
+    7. If the passwords do not match or the user does not exist, the server sends an error response back to the client indicating that the login failed.
+
+# Episode (Building DevTech Blog Application - Part 3)
+
+1. **Mongoose Middleware**
+ - Mongoose middleware, also known as pre and post hooks, are functions that are executed before or after certain Mongoose operations, such as saving a document, updating a document, or removing a document. Middleware allows you to perform additional logic or modify data during these operations.
+ - There are two types of middleware in Mongoose:
+    1. **Pre Middleware**: These functions are executed before a specific operation is performed. For example, you can use pre middleware to hash a password before saving a user document to the database.
+    2. **Post Middleware**: These functions are executed after a specific operation is performed. For example, you can use post middleware to log information after a document has been saved.
+ - Here is an example of using pre middleware to hash a password before saving a user document:
+```javascript
+userSchema.pre("save", async function (next) {
+  const user = this;
+  if (user.isModified("password")) {
+    user.password = await bcrypt.hash(user.password, 10);
+  }
+  next();
+});
+```
+ - In this example, the pre middleware function is defined on the `userSchema` and is executed before the `save` operation. It checks if the password field has been modified, and if so, it hashes the password using bcrypt before saving the document to the database.
+ - Mongoose middleware can be a powerful tool for implementing custom logic and ensuring data integrity in your application. You can read more about Mongoose middleware in the [Mongoose Documentation](https://mongoosejs.com/docs/middleware.html).
+
+ 2. **Password Hashing using Bcrypt**
+ - Password hashing is a crucial security measure used to protect user passwords from being stored in plain text in a database. Bcrypt is a popular password hashing library that provides a secure way to hash and verify passwords.
+ - Bcrypt uses a technique called "salting" to add random data to the password before hashing it. This makes it more difficult for attackers to use precomputed tables (rainbow tables) to crack the hashed passwords. Bcrypt also incorporates a work factor, which determines how computationally expensive the hashing process is, making it more resistant to brute-force attacks.
+ - Here is an example of how to use Bcrypt to hash a password before saving it to the database:
+```javascript
+const bcrypt = require("bcrypt");
+app.post("/signup", async (req, res) => {
+  try {
+    const { password, firstname, lastname, email } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userData = new User({
+      firstname,
+      lastname,
+      email,
+      password: hashedPassword,
+    });
+    await userData.save();
+    res.status(201).send("User registered successfully");
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
