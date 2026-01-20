@@ -26,6 +26,24 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      throw new Error("Invalid password");
+    } else {
+      res.status(200).send("Login successful");
+    }
+  } catch (error) {
+    res.status(400).send("Error " + error.message);
+  }
+});
+
 app.get("/users", async (req, res) => {
   const userEmail = req.body.email;
   try {
@@ -66,7 +84,7 @@ app.patch("/updateUser/:userId", async (req, res) => {
   try {
     const updatedUser = ["password", "About", "skills", "age"];
     const validateUpdate = Object.keys(req.body).every((key) =>
-      updatedUser.includes(key)
+      updatedUser.includes(key),
     );
     if (!validateUpdate) {
       return res.status(400).send("Invalid update fields");
@@ -87,7 +105,7 @@ app.patch("/findAndUpdate", async (req, res) => {
     // Doing API validation for all the fields before updating
     const updatedUser = ["password", "About", "skills", "age"];
     const validateUpdate = Object.keys(updateData).every((key) =>
-      updatedUser.includes(key)
+      updatedUser.includes(key),
     );
     if (!validateUpdate) {
       return res.status(400).send("Invalid update fields");

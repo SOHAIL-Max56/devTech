@@ -486,3 +486,25 @@ app.post("/signup", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+``` 
+# Authentication 
+
+- flow of Authentication using JWT
+ 1. User Login
+    - The user sends a POST request to the `/login` endpoint with their email and password.
+    - The server verifies the user's credentials by checking the email and comparing the hashed password.
+    - If the credentials are valid, the server generates a JWT (JSON Web Token) containing user information and signs it with a secret key.
+    - The server sends the JWT back to the client in the response.
+ 2. Accessing Protected Routes
+    - The client includes the JWT in the Authorization header of subsequent requests to protected routes (e.g., `Authorization: Bearer <token>`).
+    - The server receives the request and extracts the JWT from the Authorization header.
+    - The server verifies the JWT using the secret key to ensure its authenticity and integrity.
+    - If the JWT is valid, the server allows access to the protected route and processes the request.
+    - If the JWT is invalid or expired, the server responds with an unauthorized error (e.g., 401 Unauthorized).
+ 3. Token Expiration and Refresh
+    - JWTs typically have an expiration time set during their creation. Once expired, they can no longer be used for authentication.
+    - To maintain user sessions, clients may implement a token refresh mechanism, where they can request a new JWT using a refresh token before the current token expires.
+
+** What is Cookie and Session? **
+ - A cookie is a small piece of data that is stored on the client's browser by a web server. Cookies are used to store information about the user's preferences, session data, and other information that can be used to personalize the user's experience on a website. Cookies are sent with every request to the server, allowing the server to identify the user and maintain state across multiple requests.
+ - A session, on the other hand, is a server-side storage mechanism that allows the server to store information about a user's interaction with a web application. Sessions are typically used to maintain user state and data across multiple requests. When a user logs in, the server creates a session and assigns a unique session ID, which is then stored in a cookie on the client's browser. The server uses this session ID to retrieve the user's session data on subsequent requests.
