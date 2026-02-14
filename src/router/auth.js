@@ -1,0 +1,47 @@
+
+const bcrypt = require("bcrypt");
+const User = require("../model/user");
+const { validateSignupData } = require("../utils/validator");
+const authRouter = require('express').Router();
+
+authRouter.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    console.log("password: ", password);
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const isPasswordMatch = await user.validatePassword(password);
+    if (isPasswordMatch) {
+      const token = await user.getJWT();
+      res.cookie("token", token);
+      res.status(200).send("Login successful");
+    } else {
+      throw new Error("Invalid password");
+    }
+  } catch (error) {
+    res.status(400).send("Error " + error.message);
+  }
+});
+
+authRouter.post("/signup", async (req, res) => {
+  try {
+    validateSignupData(req);
+    const { password, firstname, lastname, email } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userData = new User({
+      firstname,
+      lastname,
+      email,
+      password: hashedPassword,
+    });
+    await userData.save();
+    res.send("User signed up successfully");
+    console.log("User data saved: ", hashedPassword);
+  } catch (error) {
+    res.status(400).send("Error " + error.message);
+  }
+});
+
+module.exports = authRouter;

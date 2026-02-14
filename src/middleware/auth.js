@@ -1,22 +1,24 @@
-const adminAuth = (req, res, next) => {
-  console.log("Admin Login is checked");
-  const token = "xyz123"; // Simulated token generation
-  const IsAdminauthenticated = token === "xyz123"; // Simulated authentication check
-  if (!IsAdminauthenticated) {
-    res.status(401).send("Unauthorized");
-  } else {
+const jwt = require("jsonwebtoken");
+const User = require("../model/user");
+
+const userAuth = async (req, res, next) => {
+  try {
+    const { token } = req.cookies;
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+    const decoded = jwt.verify(token, "DEV@TECH#123");
+
+    const { userId } = decoded;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+    req.user = user;
     next();
+  } catch (error) {
+    res.status(401).send("Error " + error.message);
   }
 };
-
-const userAuth =  (req, res, next) => {
-  console.log("User Login is checked");
-  const token = "abc456"; // Simulated token generation
-  const IsUserauthenticated = token === "abc456"; // Simulated authentication check
-  if (!IsUserauthenticated) {
-    res.status(401).send("Unauthorized");
-  } else {
-    next();
-  }
-}
-module.exports = {adminAuth, userAuth};
+module.exports = { userAuth };

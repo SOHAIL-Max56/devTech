@@ -508,3 +508,5 @@ app.post("/signup", async (req, res) => {
 ** What is Cookie and Session? **
  - A cookie is a small piece of data that is stored on the client's browser by a web server. Cookies are used to store information about the user's preferences, session data, and other information that can be used to personalize the user's experience on a website. Cookies are sent with every request to the server, allowing the server to identify the user and maintain state across multiple requests.
  - A session, on the other hand, is a server-side storage mechanism that allows the server to store information about a user's interaction with a web application. Sessions are typically used to maintain user state and data across multiple requests. When a user logs in, the server creates a session and assigns a unique session ID, which is then stored in a cookie on the client's browser. The server uses this session ID to retrieve the user's session data on subsequent requests.
+
+ 
