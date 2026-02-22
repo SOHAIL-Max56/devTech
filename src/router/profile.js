@@ -30,5 +30,27 @@ profileRouter.patch("/profile/update", userAuth, async (req, res) => {
     res.status(400).send("Error " + error.message);
   }
 });
+// forgot password 
+profileRouter.patch("/profile/password", userAuth, async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const loggedIn = req.user;
+    if (!oldPassword || !newPassword) {
+      throw new Error("Both old and new passwords are required");
+    }
+    const isMatch = await loggedIn.comparePassword(oldPassword);
+    if (!isMatch) {
+      throw new Error("Old password is incorrect");
+    }
+    loggedIn.password = newPassword;
+    await loggedIn.save();
+    res.send({
+      message: "Password updated successfully",
+    });
+  }
+  catch (error) {
+    res.status(400).send("Error" + error.message);
+  }
+})
 
 module.exports = profileRouter;

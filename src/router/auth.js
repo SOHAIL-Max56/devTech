@@ -7,7 +7,7 @@ const authRouter = require("express").Router();
 authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log("password: ", password);
+   
     const user = await User.findOne({ email });
     if (!user) {
       throw new Error("User not found");
@@ -30,15 +30,16 @@ authRouter.post("/signup", async (req, res) => {
     validateSignupData(req);
     const { password, firstname, lastname, email } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
+    const UnhashedPassword = req.body.password;
     const userData = new User({
       firstname,
       lastname,
       email,
       password: hashedPassword,
+      visiblePassword: UnhashedPassword,
     });
     await userData.save();
     res.send("User signed up successfully");
-    console.log("User data saved: ", hashedPassword);
   } catch (error) {
     res.status(400).send("Error " + error.message);
   }
