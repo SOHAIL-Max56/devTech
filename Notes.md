@@ -818,3 +818,22 @@ await User.find({ age: { $in: [18, 25, 30] } });
 await User.find({ age: { $nin: [18, 25, 30] } });
 ```
 
+### Paging and Limit in feed API 
+
+- **Pagination**: Pagination is the process of dividing a large dataset into smaller, manageable chunks (pages) to improve performance and user experience. In MongoDB, you can implement pagination using the `skip()` and `limit()` methods.
+
+```javascript
+const page = parseInt(req.query.page) || 1; // Current page number
+let limit = parseInt(req.query.limit) || 10; // Number of items per page
+const skip = (page - 1) * limit; // Number of items to skip
+limit = Math.min(limit, 50); // Set a maximum limit to prevent abuse
+const feedUsers = await User.find({
+    $and: [
+          { _id: { $ne: loggedInUser._id } },
+          { _id: { $nin: Array.from(hideUserFromFeed) } },
+        ],
+  }).select(User_Fields).skip(skip).limit(limit);
+  ```
+
+- In this example, we calculate the `skip` value based on the current page number and the limit of items per page. We also set a maximum limit to prevent abuse. The `skip()` method is used to skip a certain number of documents, and the `limit()` method is used to specify the maximum number of documents to return in the result. This allows us to efficiently retrieve a specific page of results from the database. We also `limit()` the number of items returned to prevent overwhelming the client and to improve performance.
+
