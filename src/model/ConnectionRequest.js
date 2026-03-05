@@ -1,10 +1,12 @@
 const mongoose = require("mongoose");
+const User = require("./user");
 
 const connectionRequestSchema = new mongoose.Schema(
   {
     senderId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: "User",
     },
 
     receiverId: {

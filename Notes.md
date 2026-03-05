@@ -144,11 +144,11 @@ Answer: NodeJS wraps the module code inside the function which provides access t
   - It provides a set of APIs that can be used to perform asynchronous operations in Node.js.
   - ***It manages data based operations, file operations, network operations, etc.***
 
-**V8 Engine (JS Engine) + Libuv = NodeJS**
+### V8 Engine (JS Engine) + Libuv = NodeJS
 
 - V8 Engine is responsible for executing JavaScript code, while Libuv is responsible for handling asynchronous operations in Node.js.
 
-**ASYNCHRONOUS vs SYNCHRONOUS**
+### ASYNCHRONOUS vs SYNCHRONOUS**
 
 - Synchronous operations are blocking, which means that the code execution is blocked until the operation is completed.
 - Asynchronous operations are non-blocking, which means that the code execution is not blocked while the operation is being performed.
@@ -306,14 +306,14 @@ server.listen(5000);
 
 1. **SQL vs NoSQL**
 
-    | Feature            | Relational Databases                          | NoSQL Databases                       |
-    |--------------------|-----------------------------------------------|--------------------------------------|
-    | Data Model         | Structured (tables with rows and columns)     | Unstructured or semi-structured (documents, key-value pairs, graphs) |
-    | Schema             | Fixed schema (predefined structure)           | Flexible schema (dynamic structure) |
-    | Query Language     | SQL (Structured Query Language)               | Varies (e.g., MongoDB Query Language, CQL) |
-    | Scalability        | Vertical scaling (adding more resources to a single server) | Horizontal scaling (adding more servers to distribute the load) |
-    | Transactions       | ACID (Atomicity, Consistency, Isolation, Durability) compliant | BASE (Basically Available, Soft state, Eventual consistency) |
-    | Use Cases          | Complex queries, transactions, structured data | Big data, real-time applications, unstructured data |
+    | Feature            | Relational Databases                                           | NoSQL Databases                                                |
+    |--------------------|----------------------------------------------------------------|----------------------------------------------------------------|
+    | Data Model         | Structured (tables with rows and columns)                      | Unstructured or semi-structured (documents, key-value pairs, graphs) |
+    | Schema             | Fixed schema (predefined structure)                            | Flexible schema (dynamic structure)                            |
+    | Query Language     | SQL (Structured Query Language)                                | Varies (e.g., MongoDB Query Language, CQL)                    |
+    | Scalability        | Vertical scaling (adding more resources to a single server)    | Horizontal scaling (adding more servers to distribute the load) |
+    | Transactions       | ACID (Atomicity, Consistency, Isolation, Durability) compliant | BASE (Basically Available, Soft state, Eventual consistency)  |
+    | Use Cases          | Complex queries, transactions, structured data                 | Big data, real-time applications, unstructured data           |
 
 ## Episode (Building DevTech Blog Application - Part 1)
 
@@ -520,9 +520,39 @@ userSchema.pre("save", async function (next) {
 
 1. **Password Hashing using Bcrypt**
 
-- Password hashing is a crucial security measure used to protect user passwords from being stored in plain text in a database. Bcrypt is a popular password hashing library that provides a secure way to hash and verify passwords.
-- Bcrypt uses a technique called "salting" to add random data to the password before hashing it. This makes it more difficult for attackers to use precomputed tables (rainbow tables) to crack the hashed passwords. Bcrypt also incorporates a work factor, which determines how computationally expensive the hashing process is, making it more resistant to brute-force attacks.
-- Here is an example of how to use Bcrypt to hash a password before saving it to the database:
+- Bcrypt is a secure password hashing library that protects passwords by converting them into irreversible hashes rather than storing plain text.
+- **Key Features**:
+  - **Salting**: Adds random data to passwords before hashing, preventing rainbow table attacks.
+  - **Work Factor**: Controls computational cost, making brute-force attacks slower and harder.
+  - **Adaptive**: Automatically increases difficulty as computing power improves.
+
+- **How Bcrypt Works**:
+  1. User enters password → Bcrypt adds a random salt
+  2. Password + salt → Hashed using a secure algorithm
+  3. Hashed password stored in database (original password discarded)
+  4. On login: Compare entered password hash with stored hash
+
+- **Example - Hashing Password**:
+
+```javascript
+const bcrypt = require("bcrypt");
+
+// Hash password before saving
+const hashedPassword = await bcrypt.hash(password, 10);
+// 10 = work factor (higher = slower but more secure)
+```
+
+- **Example - Verifying Password**:
+
+```javascript
+// Compare password during login
+const isPasswordValid = await bcrypt.compare(enteredPassword, storedHashedPassword);
+if (isPasswordValid) {
+  // Password matches, allow login
+}
+```
+
+- **Best Practice**: Always hash passwords using Bcrypt before storing them in the database. Never store or log plain text passwords.
 
 ```javascript
 const bcrypt = require("bcrypt");
@@ -592,3 +622,199 @@ connectionRequestSchema.index({ senderId: 1, receiverId: 1 }, { unique: true });
 
 - **Benefits**: Faster queries filtering by multiple fields, enforces data constraints, reduces database scans.
 - **Trade-off**: Increases storage and slows down write operations (inserts/updates) due to index maintenance.
+
+1. **Populating References in Mongoose**
+
+- Mongoose's `populate()` method allows you to replace a referenced document's ObjectId with the actual document data. This is useful for retrieving related data in a single query.
+- Example: If you have a `ConnectionRequest` schema that references a `User` schema, you can populate the sender's information when retrieving a connection request.
+
+```javascript
+const connectionRequest = await ConnectionRequest.findOne({
+  _id: requestId,
+  receiverId: loggedInUser._id,
+  status: "interested",
+}).populate("senderId", "firstname");
+```
+
+- In this example, the `populate()` method is used to replace the `senderId` ObjectId with the actual user document, but only the `firstname` field of the user will be included in the result.
+- This allows you to easily access the sender's first name when processing the connection request, without needing to perform a separate query to retrieve the user information.
+
+  ## Security Considerations for POST and GET APIs
+
+  ### POST API Security
+
+  1. **Input Validation and Sanitization**
+  - Validate all incoming data against expected types, lengths, and formats
+    - Reject requests with unexpected or malicious data structures
+    - Sanitize inputs to prevent injection attacks (SQL injection, NoSQL injection, etc.)
+
+  2. **Authentication and Authorization**
+  - Verify user identity before allowing POST operations
+  - Ensure users can only modify their own data or data they have permission to access
+  - Use JWT tokens or session IDs to maintain secure authentication
+
+  1. **Rate Limiting**
+  - Implement rate limiting to prevent brute-force attacks and DoS attacks
+  - Limit number of requests per user/IP within a time window
+
+  1. **CSRF Protection**
+  - Implement Cross-Site Request Forgery (CSRF) tokens to prevent unauthorized requests from malicious websites
+  - Validate token on each state-changing request
+
+  ### GET API Security
+
+  1. **Authorization Checks**
+  - Verify that the requesting user has permission to access the requested resource
+  - Prevent users from accessing other users' sensitive data
+
+  1. **Query Validation**
+  - Validate query parameters to prevent NoSQL/SQL injection
+  - Use parameterized queries with Mongoose to safely handle filters
+
+  1. **Response Filtering**
+  - Only return fields that are safe to expose (exclude passwords, sensitive tokens, etc.)
+  - Use field selection with `populate()` to limit returned data
+
+  1. **Pagination and Limits**
+  - Implement pagination to prevent attackers from retrieving massive datasets
+  - Set maximum limits on returned records
+
+  ### Common Security Threats and Protections
+
+  - **SQL/NoSQL Injection**: Use ORMs like Mongoose that prevent injection attacks
+  - **XSS Attacks**: Sanitize data and use proper encoding in responses
+  - **Unauthorized Access**: Implement proper authentication and authorization checks
+  - **Data Exposure**: Return only necessary fields and hash sensitive data like passwords
+  - **Brute-Force Attacks**: Implement rate limiting and account lockout mechanisms
+
+  ### Populate and Ref in Mongoose
+
+  > `ref` is used in Mongoose schemas to define a reference to another model. It allows you to create relationships between different collections in MongoDB. When you use `ref`, you can populate the referenced document's data when querying the main document.
+
+```javascript
+const userSchema = new mongoose.Schema({
+  firstname: String,
+  lastname: String,
+});
+const connectionRequestSchema = new mongoose.Schema({
+  senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  receiverId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  status: String,
+});
+```
+
+- In this example, the `senderId` and `receiverId` fields in the `ConnectionRequest` schema reference the `User` model. When you query a connection request, you can use `populate()` to retrieve the sender's and receiver's user information in a single query.
+
+```javascript
+const connectionRequest = await ConnectionRequest.findOne({
+  _id: requestId,
+  receiverId: loggedInUser._id,
+  status: "interested",
+}).populate("senderId", "firstname lastname gender age skills About ");
+```
+
+- This will replace the `senderId` ObjectId with the actual user document containing the specified fields (firstname, lastname, gender, age, skills, About). This allows you to easily access the sender's information when processing the connection request.
+
+### Uses of Different Operators in MongoDB
+
+- **$set**: Updates the value of a field in a document. If the field does not exist, it will be created.
+
+```javascript
+await User.findOneAndUpdate(
+  { email: userEmail },
+  { $set: { password: newPassword } },
+  { new: true }
+);
+
+``` 
+
+- **$inc**: Increments the value of a field by a specified amount. If the field does not exist, it will be created and set to the increment value.
+
+```javascript
+await User.findOneAndUpdate(
+  { email: userEmail },
+  { $inc: { age: 1 } },
+  { new: true }
+);
+```
+
+- **$push**: Adds an element to an array field. If the field does not exist, it will be created as an array with the pushed element.
+
+```javascript
+await User.findOneAndUpdate(
+  { email: userEmail },
+  { $push: { skills: "JavaScript" } },
+  { new: true }
+);
+```
+
+### Different Logic Operators in MongoDB
+
+- **$and**: Joins query clauses with a logical AND. Returns documents that match all the specified conditions.
+
+```javascript
+await User.find({
+  $and: [
+    { age: { $gt: 18 } },
+    { skills: "JavaScript" }
+  ]
+});
+```
+
+- **$or**: Joins query clauses with a logical OR. Returns documents that match at least one of the specified conditions.
+
+```javascript
+await User.find({
+  $or: [
+    { age: { $gt: 18 } },
+    { skills: "JavaScript" }
+  ]
+});
+```
+
+- **$not**: Inverts the effect of a query expression. Returns documents that do not match the specified condition.
+
+```javascript
+await User.find({
+  age: { $not: { $gt: 18 } }
+});
+```
+
+### Different Comparison Operators in MongoDB
+
+- **$gt**: Greater than. Matches documents where the value of a field is greater than the specified value.
+
+```javascript
+await User.find({ age: { $gt: 18 } });
+```
+
+- **$lt**: Less than. Matches documents where the value of a field is less than the specified value.
+
+```javascript
+await User.find({ age: { $lt: 30 } });
+```
+
+- **$eq**: Equal to. Matches documents where the value of a field is equal to the specified value.
+
+```javascript
+await User.find({ age: { $eq: 25 } });
+```
+
+- **$ne**: Not equal to. Matches documents where the value of a field is not equal to the specified value.
+
+```javascript
+await User.find({ age: { $ne: 18 } });
+```
+
+- **$in**: In. Matches documents where the value of a field is in the specified array.
+
+```javascript
+await User.find({ age: { $in: [18, 25, 30] } });
+```
+
+- **$nin**: Not in. Matches documents where the value of a field is not in the specified array.
+
+```javascript
+await User.find({ age: { $nin: [18, 25, 30] } });
+```
+
