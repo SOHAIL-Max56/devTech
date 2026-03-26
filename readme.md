@@ -837,3 +837,19 @@ const feedUsers = await User.find({
 
 - In this example, we calculate the `skip` value based on the current page number and the limit of items per page. We also set a maximum limit to prevent abuse. The `skip()` method is used to skip a certain number of documents, and the `limit()` method is used to specify the maximum number of documents to return in the result. This allows us to efficiently retrieve a specific page of results from the database. We also `limit()` the number of items returned to prevent overwhelming the client and to improve performance.
 
+### Bypassing CORS in Development
+
+> CORS (Cross-Origin Resource Sharing) is a security feature implemented by browsers to restrict web applications from making requests to a different domain than the one that served the web page. During development, you may encounter CORS issues when your frontend and backend are running on different ports or domains.
+
+- To bypass CORS issues in development, you can use the `cors` middleware in your Express.js backend. This middleware allows you to specify which origins are allowed to access your API.
+
+```javascript
+const cors = require("cors");
+app.use(cors({
+  origin: "http://localhost:3000", // Allow requests from this origin
+  methods: ["GET", "POST", "PATCH", "DELETE"], // Allowed HTTP methods
+  credentials: true, // Allow cookies to be sent with requests
+}));
+```
+
+- In this example, we configure the `cors` middleware to allow requests from `http://localhost:3000`, which is where our frontend is running. We also specify the allowed HTTP methods and allow credentials (cookies) to be sent with requests. This setup will help you bypass CORS issues during development while still maintaining security by only allowing requests from the specified origin. Remember to adjust the CORS configuration for production environments to ensure proper security measures are in place.
