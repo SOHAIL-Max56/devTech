@@ -10,7 +10,7 @@ authRouter.post("/login", async (req, res) => {
    
     const user = await User.findOne({ email });
     if (!user) {
-      throw new Error("User not found");
+      return res.status(400).send("User not found");
     }
     const isPasswordMatch = await user.validatePassword(password);
     if (isPasswordMatch) {

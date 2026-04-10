@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
   {
     firstname: {
       type: String,
-      index : true,
+      index: true,
       required: true,
       trim: true,
       minlength: 3,
@@ -33,6 +33,11 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
+    photoUrl: {
+      type: String,
+      default:
+        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    },
     password: {
       type: String,
       required: true,
@@ -46,13 +51,12 @@ const userSchema = new mongoose.Schema(
     },
     visiblePassword: {
       type: String,
-      required: true,
       trim: true,
       minlength: 8,
     },
     gender: {
       type: String,
-      enum : {
+      enum: {
         values: ["male", "female", "other"],
         message: `{VALUE} is not a valid gender`,
       },

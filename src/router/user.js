@@ -4,7 +4,7 @@ const ConnectionRequest = require("../model/ConnectionRequest");
 const { userAuth } = require("../middleware/auth");
 const { request } = require("express");
 
-const User_Fields = "firstname lastname gender age skills About";
+const User_Fields = "firstname lastname gender age photoUrl skills About";
 // Get all users
 userRouter.get("/user/request/received", userAuth, async (req, res) => {
   try {
@@ -22,7 +22,7 @@ userRouter.get("/user/request/received", userAuth, async (req, res) => {
   }
 });
 
-userRouter.get("/user/connection", userAuth, async (req, res) => {
+userRouter.get("/user/connections", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
     const connectionRequests = await ConnectionRequest.find({
