@@ -7,7 +7,7 @@ const authRouter = require("express").Router();
 authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-   
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).send("User not found");
@@ -38,16 +38,18 @@ authRouter.post("/signup", async (req, res) => {
       password: hashedPassword,
       visiblePassword: UnhashedPassword,
     });
-    await userData.save();
-    res.send("User signed up successfully");
+    const data = await userData.save();
+    const token = await data.getJWT();
+    res.cookie("token", token);
+    res.json({ message: "User signed up successfully", data: data });
   } catch (error) {
     res.status(400).send("Error " + error.message);
   }
 });
 
 authRouter.post("/logout", userAuth, async (req, res) => {
-  res.clearCookie("token", { expires: new Date(0) });
-  res.send("Logout successful");
+  res.clearCookie("token");
+  res.json({ message: "Logout successful" });
 });
 
 module.exports = authRouter;

@@ -25,6 +25,7 @@ userRouter.get("/user/request/received", userAuth, async (req, res) => {
 userRouter.get("/user/connections", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
+
     const connectionRequests = await ConnectionRequest.find({
       $or: [
         { senderId: loggedInUser._id, status: "accepted" },
@@ -33,15 +34,33 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
     })
       .populate("senderId", User_Fields)
       .populate("receiverId", User_Fields);
+
     const data = connectionRequests.map((request) => {
-      if (request.senderId._id.equals(loggedInUser._id)) {
-        return request.receiverId;
+      // Check if senderId is populated (has _id as ObjectId with properties)
+      const senderIsPopulated = request.senderId && request.senderId.firstname;
+      // Check if receiverId is populated
+      const receiverIsPopulated =
+        request.receiverId && request.receiverId.firstname;
+
+      let connectionUser;
+
+      // Determine which one is the OTHER user (not logged in user)
+      if (request.senderId._id.toString() === loggedInUser._id.toString()) {
+        connectionUser = request.receiverId; // Return receiver
+      } else {
+        connectionUser = request.senderId; // Return sender
       }
-      return request.senderId;
+
+      // Only return if the connection user is properly populated
+      return connectionUser && connectionUser.firstname ? connectionUser : null;
     });
-    res.json({ data });
+
+    // Filter out nulls (deleted users)
+    const validData = data.filter((item) => item !== null);
+
+    res.json({ data: validData });
   } catch (error) {
-    res.status(401).send("Error " + error.message);
+    res.status(400).json({ error: error.message });
   }
 });
 
