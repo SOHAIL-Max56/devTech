@@ -15,7 +15,12 @@ authRouter.post("/login", async (req, res) => {
     const isPasswordMatch = await user.validatePassword(password);
     if (isPasswordMatch) {
       const token = await user.getJWT();
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: false, // Set to true if using HTTPS
+        sameSite: "lax", // or "none" if cross-site
+        maxAge: 8 * 60 * 60 * 1000, // 8 hours
+      });
       res.status(200).send(user);
     } else {
       throw new Error("Invalid password");
@@ -40,7 +45,12 @@ authRouter.post("/signup", async (req, res) => {
     });
     const data = await userData.save();
     const token = await data.getJWT();
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // Set to true if using HTTPS
+      sameSite: "lax", // or "none" if cross-site
+      maxAge: 8 * 60 * 60 * 1000, // 8 hours
+    });
     res.json({ message: "User signed up successfully", data: data });
   } catch (error) {
     res.status(400).send("Error " + error.message);
