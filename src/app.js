@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const connectdb = require("./config/database");
 const app = express();
@@ -9,18 +10,16 @@ const profileRouter = require("./router/profile");
 const requestRouter = require("./router/request");
 const userRouter = require("./router/user");
 
-require("dotenv").config();
-
 // CORS setup
 const corsOptions = {
   origin: [
     "http://localhost:5173",
     "http://98.130.129.15",
-    "http://localhost:3000"
+    "http://localhost:3000",
   ],
   credentials: true,
   methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "Cookie"]
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
 };
 
 app.use(cors(corsOptions));

@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
     },
     photoUrl: {
       type: String,
-      trim : true,
+      trim: true,
       default:
         "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
     },
@@ -83,7 +83,7 @@ const userSchema = new mongoose.Schema(
 userSchema.methods.getJWT = async function () {
   const user = this;
 
-  const token = await jwt.sign({ userId: user._id }, "DEV@TECH#123", {
+  const token = await jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
   return token;
