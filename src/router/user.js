@@ -25,38 +25,37 @@ userRouter.get("/user/request/received", userAuth, async (req, res) => {
 userRouter.get("/user/connections", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
+    const myId = loggedInUser._id.toString();
 
     const connectionRequests = await ConnectionRequest.find({
-      $or: [
-        { senderId: loggedInUser._id, status: "accepted" },
-        { receiverId: loggedInUser._id, status: "accepted" },
-      ],
+      status: "accepted",
+      $or: [{ senderId: loggedInUser._id }, { receiverId: loggedInUser._id }],
     })
       .populate("senderId", User_Fields)
       .populate("receiverId", User_Fields);
 
-    const data = connectionRequests.map((request) => {
-      // Check if senderId is populated (has _id as ObjectId with properties)
-      const senderIsPopulated = request.senderId && request.senderId.firstname;
-      // Check if receiverId is populated
-      const receiverIsPopulated =
-        request.receiverId && request.receiverId.firstname;
+    const data = connectionRequests
+      .map((request) => {
+        // Handle both populated and unpopulated cases
+        const senderId =
+          request.senderId?._id?.toString() || request.senderId?.toString();
+        const receiverId =
+          request.receiverId?._id?.toString() || request.receiverId?.toString();
 
-      let connectionUser;
+        // Return the OTHER user
+        if (senderId === myId) {
+          return request.receiverId;
+        } else if (receiverId === myId) {
+          return request.senderId;
+        }
+        return null;
+      })
+      .filter((item) => item !== null && item !== undefined);
 
-      // Determine which one is the OTHER user (not logged in user)
-      if (request.senderId._id.toString() === loggedInUser._id.toString()) {
-        connectionUser = request.receiverId; // Return receiver
-      } else {
-        connectionUser = request.senderId; // Return sender
-      }
-
-      // Only return if the connection user is properly populated
-      return connectionUser && connectionUser.firstname ? connectionUser : null;
-    });
-
-    // Filter out nulls (deleted users)
-    const validData = data.filter((item) => item !== null);
+    // Filter out string IDs (unpopulated)
+    const validData = data.filter(
+      (item) => typeof item === "object" && item.firstname,
+    );
 
     res.json({ data: validData });
   } catch (error) {
