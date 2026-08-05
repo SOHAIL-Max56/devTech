@@ -9,6 +9,8 @@ const profileRouter = require("./router/profile");
 const requestRouter = require("./router/request");
 const userRouter = require("./router/user");
 
+require("dotenv").config();
+
 // CORS setup
 const corsOptions = {
   origin: [
@@ -35,8 +37,8 @@ app.use("/", userRouter);
 connectdb()
   .then(() => {
     console.log("Database connected successfully...");
-    app.listen(3000, () => {
-      console.log("Server is running on port 3000");
+    app.listen(process.env.PORT, () => {
+      console.log("Server is running on port " + process.env.PORT);
     });
   })
   .catch((err) => {
