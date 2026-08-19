@@ -96,3 +96,5 @@ userRouter.get("/feed", userAuth, async (req, res) => {
 });
 
 module.exports = userRouter;
+
+// ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHsTsmYFAAgDNnx4JE2BeuuZlHBtFgQaT9jlrBsqSrGT aws-ec2
