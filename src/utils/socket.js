@@ -15,20 +15,17 @@ const initializeSocket = (server) => {
     socket.on("JoinChat", ({ firstName, userId, targetUserId }) => {
       currentUserId = userId; // ✅ Set the value
       const roomId = [userId, targetUserId].sort().join("_");
-      console.log(firstName + " joined room " + roomId);
       socket.join(roomId);
     });
 
     socket.on("SendMessage", async ({ firstName, receiverId, text }) => {
       if (!currentUserId) {
-        console.log("Error: User hasn't joined a room yet");
         return;
       }
 
       // Save Message in Db
       try {
         const roomId = [currentUserId, receiverId].sort().join("_");
-        console.log(`${firstName}  sending to room  ${text}`);
         let chat = await Chat.findOne({
           participants: { $all: [currentUserId, receiverId] },
         });
@@ -57,7 +54,6 @@ const initializeSocket = (server) => {
     });
 
     socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
     });
   });
 
