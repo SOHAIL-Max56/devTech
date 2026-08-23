@@ -7,11 +7,11 @@ const cors = require("cors");
 const http = require("http");
 const initilizeSocket = require("./utils/socket");
 
-
 const authRouter = require("./router/auth");
 const profileRouter = require("./router/profile");
 const requestRouter = require("./router/request");
 const userRouter = require("./router/user");
+const chatRouter = require("./router/chat");
 
 // CORS setup
 const corsOptions = {
@@ -30,6 +30,7 @@ app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
+app.use("/", chatRouter);
 
 const server = http.createServer(app);
 initilizeSocket(server);

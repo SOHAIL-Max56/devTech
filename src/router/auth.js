@@ -12,6 +12,7 @@ authRouter.post("/login", async (req, res) => {
     if (!user) {
       return res.status(400).send("User not found");
     }
+    if (!password) return res.status(400).send("Enter Password");
     const isPasswordMatch = await user.validatePassword(password);
     if (isPasswordMatch) {
       const token = await user.getJWT();
@@ -23,10 +24,10 @@ authRouter.post("/login", async (req, res) => {
       });
       res.status(200).send(user);
     } else {
-      throw new Error("Invalid password");
+      throw new Error("Invalid password ");
     }
   } catch (error) {
-    res.status(400).send("Error" + error.message);
+    res.status(400).send("Error " + error.message);
   }
 });
 

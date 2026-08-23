@@ -1,4 +1,5 @@
 const socket = require("socket.io");
+const Chat = require("../model/chat");
 
 const initializeSocket = (server) => {
   const io = socket(server, {
@@ -18,22 +19,41 @@ const initializeSocket = (server) => {
       socket.join(roomId);
     });
 
-    socket.on("SendMessage", ({ firstName, receiverId, text }) => {
+    socket.on("SendMessage", async ({ firstName, receiverId, text }) => {
       if (!currentUserId) {
         console.log("Error: User hasn't joined a room yet");
         return;
       }
 
-      const roomId = [currentUserId, receiverId].sort().join("_");
-      console.log(
-        `${firstName}  sending to room  ${text}`,
-      );
+      // Save Message in Db
+      try {
+        const roomId = [currentUserId, receiverId].sort().join("_");
+        console.log(`${firstName}  sending to room  ${text}`);
+        let chat = await Chat.findOne({
+          participants: { $all: [currentUserId, receiverId] },
+        });
 
-      io.to(roomId).emit("messageReceived", {
-        firstName,
-        senderId: currentUserId,
-        text
-      });
+        if (!chat) {
+          chat = new Chat({
+            participants: [currentUserId, receiverId],
+            messages: [],
+          });
+        }
+        chat.messages.push({
+          senderId: currentUserId,
+          text,
+          timestamp: new Date(),
+        });
+        await chat.save();
+        io.to(roomId).emit("messageReceived", {
+          firstName,
+          senderId: currentUserId,
+          text,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error) {
+        console.error("Error saving Message ", error.message);
+      }
     });
 
     socket.on("disconnect", () => {
