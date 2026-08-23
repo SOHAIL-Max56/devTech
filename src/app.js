@@ -15,7 +15,11 @@ const chatRouter = require("./router/chat");
 
 // CORS setup
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://98.130.129.15"],
+  origin: [
+    "http://localhost:5173",
+    "http://98.130.129.15",
+    "http://32.197.193.175",
+  ],
   credentials: true,
   methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
