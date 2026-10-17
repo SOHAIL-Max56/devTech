@@ -19,7 +19,7 @@ const corsOptions = {
   origin: [
     "http://localhost:5173",
     "http://98.130.129.15",
-    "http://32.197.193.175",
+    "https://dev-tech-web-server.vercel.app/"
   ],
   credentials: true,
   methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
