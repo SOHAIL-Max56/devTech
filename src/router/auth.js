@@ -20,6 +20,7 @@ authRouter.post("/login", async (req, res) => {
         httpOnly: true,
         secure: true, // Set to true if using HTTPS
         sameSite: "none", // or "none" if cross-site
+        path : "/", 
         maxAge: 8 * 60 * 60 * 1000, // 8 hours
       });
       res.status(200).send(user);
@@ -49,7 +50,8 @@ authRouter.post("/signup", async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: true, // Set to true if using HTTPS
-      sameSite: "none", // or "none" if cross-site
+      sameSite: "none",// or "none" if cross-site
+      path : "/", 
       maxAge: 8 * 60 * 60 * 1000, // 8 hours
     });
     res.json({ message: "User signed up successfully", data: data });
@@ -64,4 +66,3 @@ authRouter.post("/logout", userAuth, async (req, res) => {
 });
 
 module.exports = authRouter;
-|
