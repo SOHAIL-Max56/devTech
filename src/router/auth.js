@@ -18,7 +18,7 @@ authRouter.post("/login", async (req, res) => {
       const token = await user.getJWT();
       res.cookie("token", token, {
         httpOnly: true,
-        secure: false, // Set to true if using HTTPS
+        secure: true, // Set to true if using HTTPS
         sameSite: "lax", // or "none" if cross-site
         maxAge: 8 * 60 * 60 * 1000, // 8 hours
       });
@@ -48,7 +48,7 @@ authRouter.post("/signup", async (req, res) => {
     const token = await data.getJWT();
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // Set to true if using HTTPS
+      secure: true, // Set to true if using HTTPS
       sameSite: "lax", // or "none" if cross-site
       maxAge: 8 * 60 * 60 * 1000, // 8 hours
     });

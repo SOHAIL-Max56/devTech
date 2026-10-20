@@ -18,7 +18,7 @@ const chatRouter = require("./router/chat");
 const corsOptions = {
   origin: [
     "http://localhost:5173",
-    "http://98.130.129.15",
+    "https://dev-tech-web-server.vercel.app",
     "https://dev-tech-web-server.vercel.app"
   ],
   credentials: true,
